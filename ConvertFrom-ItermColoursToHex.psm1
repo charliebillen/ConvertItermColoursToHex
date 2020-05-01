@@ -58,8 +58,6 @@ function ConvertFrom-ItermColoursToHex {
     )
 
     process {
-        $hexColours = [ordered]@{}
-
         foreach ($key in $InputXml.GetElementsByTagName('key')) {
             $mappedName = $Script:colourNames[$key.InnerText]
 
@@ -67,10 +65,11 @@ function ConvertFrom-ItermColoursToHex {
                 continue
             }
 
-            $hexColours[$mappedName] = Get-HexFromXml $key.NextSibling
+            [pscustomobject]@{
+                Name = $mappedName
+                Colour = Get-HexFromXml $key.NextSibling
+            }
         }
-
-        [pscustomobject]$hexColours
     }
 }
 

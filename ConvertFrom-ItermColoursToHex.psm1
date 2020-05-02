@@ -1,27 +1,27 @@
-$Script:colourNames = [ordered]@{
-    'Ansi 0 Color' = 'Black'
-    'Ansi 1 Color' = 'Red'
-    'Ansi 2 Color' = 'Green'
-    'Ansi 3 Color' = 'Yellow'
-    'Ansi 4 Color' = 'Blue'
-    'Ansi 5 Color' = 'Magenta'
-    'Ansi 6 Color' = 'Cyan'
-    'Ansi 7 Color' = 'White'
-    'Ansi 8 Color' = 'Bright Black'
-    'Ansi 9 Color' = 'Bright Red'
-    'Ansi 10 Color' = 'Bright Green'
-    'Ansi 11 Color' = 'Bright Yellow'
-    'Ansi 12 Color' = 'Bright Blue'
-    'Ansi 13 Color' = 'Bright Magenta'
-    'Ansi 14 Color' = 'Bright Cyan'
-    'Ansi 15 Color' = 'Bright White'
-    'Background Color' = 'Background'
-    'Foreground Color' = 'Text'
-    'Bold Color' = 'Bold Text'
-    'Selection Color' = 'Selection Background'
+$Script:colourNames = @{
+    'Ansi 0 Color'        = 'Black'
+    'Ansi 1 Color'        = 'Red'
+    'Ansi 2 Color'        = 'Green'
+    'Ansi 3 Color'        = 'Yellow'
+    'Ansi 4 Color'        = 'Blue'
+    'Ansi 5 Color'        = 'Magenta'
+    'Ansi 6 Color'        = 'Cyan'
+    'Ansi 7 Color'        = 'White'
+    'Ansi 8 Color'        = 'Bright Black'
+    'Ansi 9 Color'        = 'Bright Red'
+    'Ansi 10 Color'       = 'Bright Green'
+    'Ansi 11 Color'       = 'Bright Yellow'
+    'Ansi 12 Color'       = 'Bright Blue'
+    'Ansi 13 Color'       = 'Bright Magenta'
+    'Ansi 14 Color'       = 'Bright Cyan'
+    'Ansi 15 Color'       = 'Bright White'
+    'Background Color'    = 'Background'
+    'Foreground Color'    = 'Text'
+    'Bold Color'          = 'Bold Text'
+    'Selection Color'     = 'Selection Background'
     'Selected Text Color' = 'Selected Foregrond'
-    'Cursor Color' = 'Cursor Background'
-    'Cursor Text Color' = 'Cursor Foreground'
+    'Cursor Color'        = 'Cursor Background'
+    'Cursor Text Color'   = 'Cursor Foreground'
 }
 
 function ConvertFrom-ItermColoursToHex {
@@ -67,26 +67,28 @@ function ConvertFrom-ItermColoursToHex {
 
             [pscustomobject]@{
                 Name = $mappedName
-                Colour = Get-HexFromXml $key.NextSibling
+                Colour = Get-HexFromNode $key.NextSibling
             }
         }
     }
 }
 
-function Get-HexFromXml($Xml) {
+function Get-HexFromNode($colourNode) {
     [int]$r = 0; [int]$g = 0; [int]$b = 0
 
-    foreach ($node in $Xml.ChildNodes) {
+    $realToByteValue = { param($real) 255 * [double]$real }
+
+    foreach ($node in $colourNode.ChildNodes) {
         if ($node.InnerText -match 'red') {
-            $r = 255 * [double]($node.NextSibling.InnerText)
+            $r = &$realToByteValue $node.NextSibling.InnerText
         }
 
         if ($node.InnerText -match 'green') {
-            $g = 255 * [double]($node.NextSibling.InnerText)
+            $g = &$realToByteValue $node.NextSibling.InnerText
         }
 
         if ($node.InnerText -match 'blue') {
-            $b = 255 * [double]($node.NextSibling.InnerText)
+            $b = &$realToByteValue $node.NextSibling.InnerText
         }
     }
 
